@@ -3,11 +3,12 @@ var Calculator = function () {
    var calc = document.getElementById("calculator");
    calc.setAttribute("class","calc");
    var pantalla = document.createElement("input");
+   var buttonsReference =[];
  
    var agregarBoton = function(value, row, parentDiv){
      var button = document.createElement("button");
-     var text = document.createTextNode(value);
-     button.appendChild(text);
+     button.value = value;
+     button.innerHTML = value;
      row.appendChild(button);
      parentDiv.appendChild(row);
      if (!isNaN(value)){
@@ -21,11 +22,14 @@ var Calculator = function () {
    var _generarPantalla = function(){
       pantalla.setAttribute("type", "text");
       pantalla.setAttribute("class","calc-display-input");
+      pantalla.disabled = true;
       calc.appendChild(pantalla);
       window.addEventListener("keydown", function(event){
-          if (event.keyCode = 13){
-              var cuenta = eval(pantalla.value);
-              pantalla.value = cuenta;
+         if (event.keyCode === 13){
+           var cuenta = eval(pantalla.value);
+           pantalla.value = cuenta || "Error";   
+          } else  if (event.keyCode === 27 ) {
+              pantalla.value = "";
           }
       });
    };
@@ -51,21 +55,22 @@ var Calculator = function () {
      }
    };
    
-   var _enviarValor = function (controller){
-       var oldData = pantalla.value;
-       console.log("oldData: " + oldData);
-       oldData += controller.innerHTML;
-       pantalla.value = oldData;
-       console.log("pantalla: " + pantalla.value);
+   var asignarEventoEnviar = function(controller){
+       controller.addEventListener("click", function(){
+           var oldData = pantalla.value;
+           console.log("oldData: " + oldData);
+           oldData += controller.innerHTML;
+           pantalla.value = oldData;
+           console.log("pantalla: " + pantalla.value);
+           controller.blur();
+           });
    };
-    
+
    var _setEventHandlers = function(){
        var buttons = document.getElementsByTagName("button");
        for (var i =0; i < buttons.length; i++){
            var b = buttons[i];
-           if (!isNaN(b.innerHTML)){
-                b.onclick = _enviarValor(b);
-           }
+           asignarEventoEnviar(b);
        }
    };
     
